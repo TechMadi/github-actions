@@ -61,7 +61,7 @@ jobs:
       - name: Zip all files for upload between jobs
         run: zip out.zip ./* .out -qr
       - name: upload artifacts
-        uses: actions/upload-page-artifact@v3
+        uses: actions/upload-pages-artifact@v3
         with:
           name: cli-app
           path: out.zip
