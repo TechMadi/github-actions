@@ -6,28 +6,48 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: checkout repo
+      - name: Checkout repo
         uses: actions/checkout@v4
-      - name: use node.js
+      - name: Use Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20.x"
-      - run: npm install
-      - run: npm run build
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: ${{ runner.os }}-node-
+      - name: Install dependencies
+        run: npm install
+      - name: Build
+        run: npm run build
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: out/
 
   test:
     needs: build
     runs-on: ubuntu-latest
-
     steps:
-      - name: checkout repo
+      - name: Checkout repo
         uses: actions/checkout@v4
-      - name: use node.js
+      - name: Use Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20.x"
-      - run: npm install
-      - run: npm test
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: ${{ runner.os }}-node-
+      - name: Install dependencies
+        run: npm install
+      - name: Run tests
+        run: npm test
 
   deploy:
     needs: test
@@ -35,44 +55,32 @@ jobs:
       contents: write
       pages: write
       id-token: write
-      actions: read
-
     environment:
       name: production
-      url: ${{steps.deploy.outputs.page_url}}
-
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-
     steps:
-      - name: checkout repo
+      - name: Checkout repo
         uses: actions/checkout@v4
         with:
-          token: ${{secrets.GITHUB_TOKEN}}
-      - name: use node.js
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Use Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20.x"
-      - name: configure-github-pages
+      - name: Configure GitHub Pages
         uses: actions/configure-pages@v4
         with:
           static_site_generator: next
-      - run: npm install
-      - run: npm run build
-      - name: Zip all files for upload between jobs
-        run: zip out.zip ./* .out -qr
-      - name: upload artifacts
-        uses: actions/upload-pages-artifact@v3
-        with:
-          name: cli-app
-          path: out.zip
-
-      - name: Download artifacts from build job
+      - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
-          name: cli-app
-      - name: deploy
+          name: build-output
+          path: out/
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: out/
+      - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
-      - name: Delete zip file
-        run: rm out.zip
