@@ -57,7 +57,8 @@ jobs:
           static_site_generator: next
       - run: npm install
       - run: npm run build
-
+      - name: Debug   Directory content
+        run: ls -la ./out
       - name: upload artifacts
         uses: actions/upload-pages-artifact@v3
         with:
