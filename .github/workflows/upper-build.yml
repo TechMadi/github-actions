@@ -19,3 +19,7 @@ jobs:
     runs-on: macos-latest
     steps:
       - run: Echo "mac os"
+  build-on-self:
+    runs-on: self-hosted
+    steps:
+      - run: Echo "self"

@@ -1,0 +1,9 @@
+﻿{
+  "agentId": 21,
+  "agentName": "SWEMADI",
+  "poolId": 1,
+  "poolName": "Default",
+  "serverUrl": "https://pipelinesghubeus7.actions.githubusercontent.com/jf5C5tVlpLUFEgoi2Z775Pf4klODZIwI66pL0ZHzfqZHRyYuyG/",
+  "gitHubUrl": "https://github.com/TechMadi/github-actions",
+  "workFolder": "_work"
+}
