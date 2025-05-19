@@ -15,3 +15,7 @@ jobs:
         with:
           node-version: "18"
       - run: node -v
+  build-on-macos:
+    runs-on: macos-latest
+    steps:
+      - run: Echo "mac os"
